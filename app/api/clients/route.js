@@ -1,33 +1,15 @@
 import sql from "mssql";
 import { NextResponse } from "next/server";
+import { dbConfig } from "../../utils/db_config";
 
-// Configuração do banco de dados
-const dbConfig = {
-	user: "db",
-	password: "yourStrongPassw0rd",
-	server: "localhost", // ou IP do seu servidor SQL
-	database: "novo",
-	options: {
-		encrypt: false, // Se estiver usando conexão criptografada
-		trustServerCertificate: true, // Para certificados não confiáveis
-	},
-};
 
-// Lidar com o método GET
-export async function GET(req) {
-	const { searchParams } = new URL(req.url);
-	const id = searchParams.get("id");
-
-	if (!id) {
-		return NextResponse.json({ error: 'O parâmetro "id" é obrigatório.' }, { status: 400 });
-	}
-
+export async function GET() {
 	try {
 		// Conectar ao banco de dados
 		await sql.connect(dbConfig);
 
 		// Chamar a stored procedure
-		const result = await sql.query`EXEC dbo.sp_InserirCliente @EmployeeID = ${id}`;
+		const result = await sql.query`SELECT * from dbo.Clientes`;
 
 		// Retornar os resultados
 		return NextResponse.json(result.recordset, { status: 200 });
